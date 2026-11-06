@@ -1,0 +1,21 @@
+# Environnements Python
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Secrets et configurations locales
+.env
+.env.*
+!.env.example
+
+# Données originales : conservées localement
+data/raw/*
+!data/raw/.gitkeep
