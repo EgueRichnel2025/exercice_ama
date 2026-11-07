@@ -1,81 +1,139 @@
 # AMA PIIA C2 — Nettoyage des données olympiques
 
-## Présentation
+## 1. Présentation
 
 Projet réalisé dans le cadre de l'exercice de nettoyage des données
 de l'Académie des Mathématiques Appliquées (AMA), PIIA Cohorte 2,
 spécialisation Machine Learning.
 
-## Binôme
-
+**Binôme :**
 - EGUE Richnel
 - AVADRA Martial
 
-## Domaine
+**Domaine :** Sport — Jeux olympiques.
 
-Sport — Jeux olympiques.
+Le projet porte sur le jeu de données
+*120 years of Olympic history: athletes and results*,
+qui couvre les participations aux Jeux olympiques de 1896 à 2016.
 
-## Objectif
+## 2. Objectifs
 
-Nettoyer le fichier athlete_events.csv afin de préparer les données
-historiques des athlètes ayant participé aux Jeux olympiques.
+L'objectif est de diagnostiquer la qualité des données, de justifier
+les corrections et de produire un fichier nettoyé.
 
-Les analyses porteront notamment sur :
+Les analyses portent notamment sur :
+- L'âge, la taille et le poids des athlètes.
+- Les médailles obtenues.
+- Les participations par sport et par pays.
+- L'évolution historique des données.
 
-- L'âge des athlètes.
-- La taille et le poids des athlètes.
-- La répartition des médailles.
-- Les performances par pays.
+## 3. Source des données
 
-## Source des données
-
-Kaggle :
+Dataset Kaggle :
 https://www.kaggle.com/datasets/heesoo37/120-years-of-olympic-history-athletes-and-results
 
-Fichier utilisé : athlete_events.csv.
+Fichier utilisé : `athlete_events.csv`.
 
-Période couverte : 1896 à 2016.
+Le fichier original est conservé localement dans `data/raw/`.
 
-## Principes de nettoyage
+## 4. Résultats du nettoyage
 
-1. Conserver une copie intacte des données originales.
-2. Réaliser un diagnostic avant toute correction.
-3. Mesurer les valeurs manquantes et les doublons.
-4. Justifier chaque transformation.
-5. Comparer les indicateurs avant et après nettoyage.
-6. Ne pas supprimer une donnée sans justification.
+| Indicateur | Avant | Après |
+|---|---:|---:|
+| Nombre de lignes | 271 116 | 269 731 |
+| Nombre de colonnes | 15 | 15 |
+| Doublons exacts supplémentaires | 1 385 | 0 |
+| Valeurs manquantes | 363 853 | 359 615 |
+| Répétitions métier supplémentaires | 1 480 | 95 |
 
-Attention : une valeur Medal manquante correspond généralement
-à un athlète n'ayant remporté aucune médaille. Elle ne doit pas
-être automatiquement considérée comme une erreur.
+### Décisions méthodologiques
 
-## Structure du projet
+- **Doublons exacts :** suppression des 1 385 occurrences
+  supplémentaires strictement identiques.
+- **Répétitions métier :** conservation lorsqu'elles peuvent
+  représenter des résultats sportifs distincts.
+- **Âge, taille et poids manquants :** conservation sans
+  imputation artificielle.
+- **Médaille manquante :** conservation, car cela signifie
+  généralement que l'athlète n'a pas remporté de médaille.
+- **Valeurs atypiques :** conservation provisoire. Une observation
+  statistiquement atypique n'est pas nécessairement une erreur.
 
-- data/raw : données originales.
-- data/processed : données nettoyées.
-- notebooks : analyse et nettoyage avec Python.
-- reports/figures : visualisations et graphiques.
+### Observations atypiques détectées par IQR
 
-## Installation
+| Variable | Nombre de candidats |
+|---|---:|
+| Age | 10 317 |
+| Height | 1 338 |
+| Weight | 3 237 |
 
-Créer un environnement virtuel :
+Ces nombres correspondent à des lignes de participation,
+pas nécessairement à des athlètes distincts.
 
-python -m venv .venv
+## 5. Livrables
 
-Activer l'environnement :
+- Notebook Jupyter documenté en français.
+- Dataset nettoyé au format CSV.
+- Rapports d'analyse et de comparaison.
+- Visualisations des données.
+- Scripts Python reproductibles.
 
-source .venv/Scripts/activate
+## 6. Installation
 
-Installer les dépendances :
+Créer un environnement virtuel avec `python -m venv .venv`.
 
-python -m pip install -r requirements.txt
+Activer l'environnement sous Git Bash avec
+`source .venv/Scripts/activate`.
 
-Lancer JupyterLab :
+Installer les dépendances avec
+`python -m pip install -r requirements.txt`.
 
-jupyter lab
+Le fichier original doit être placé dans
+`data/raw/athlete_events.csv`.
 
-## Livrables
+Le script `scripts/download_dataset.sh` permet également de télécharger
+le jeu de données lorsque l'environnement Kaggle est configuré.
 
-- Notebook Python commenté en français.
-- Fichier CSV nettoyé.
-- Comparaison des indicateurs avant et après nettoyage.
+## 7. Exécution des analyses
+
+Depuis la racine du projet :
+
+**Audit initial :** `python scripts/inspect_dataset.py`
+
+**Analyse des doublons :**
+- `python scripts/analyze_duplicates.py`
+- `python scripts/inspect_duplicate_conflicts.py`
+
+**Analyse des valeurs manquantes :**
+`python scripts/analyze_missing_values.py`
+
+**Nettoyage :** `python scripts/clean_dataset.py`
+
+Le fichier nettoyé est enregistré dans
+`data/processed/athlete_events_cleaned.csv`.
+
+## 8. Notebook principal
+
+Lancer JupyterLab avec `jupyter lab`, puis ouvrir :
+
+`notebooks/01_nettoyage_athletes_olympiques.ipynb`
+
+Ce notebook rassemble le diagnostic, les analyses exploratoires,
+les décisions de nettoyage et les contrôles de qualité.
+
+## 9. Organisation du projet
+
+- `data/raw/` : données originales non versionnées.
+- `data/processed/` : données nettoyées.
+- `notebooks/` : notebook d'analyse et de nettoyage.
+- `reports/` : rapports et visualisations.
+- `scripts/` : scripts Python d'analyse et de nettoyage.
+
+## 10. Conclusion
+
+Le nettoyage a permis de supprimer les doublons strictement identiques
+tout en préservant les informations historiques utiles.
+
+La démarche privilégie la traçabilité des transformations,
+la justification des décisions et la conservation des observations
+qui ne sont pas confirmées comme erronées.
